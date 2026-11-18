@@ -1,6 +1,6 @@
 const { call, cancel, delay, fork, put, race, take, takeEvery, takeLatest } = require('redux-saga/effects')
 const { actions } = require('./slice.js')
-const { createRpcEventChannel } = require('../rpc/event-channel.js')
+const { createRpcEventChannel } = require('bare-rpc-event-channel')
 
 function * joinSaga (client, action) {
   const timeoutMs = action.payload.timeout == null ? 10000 : action.payload.timeout

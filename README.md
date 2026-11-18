@@ -60,13 +60,13 @@ npm run android
 
 `postinstall` runs `bare-link` and writes the iOS and Android addon binaries to `bare-addons/`. The config plugin `plugins/with-keet-lite.js` copies those into the native projects during `expo prebuild`, and `expo-build-properties` turns on the New Architecture. Hermes is the engine this SDK uses; `expo export` produced a `.hbc` bundle for Android (6.7 MB) and for iOS (6.6 MB). Those are file sizes of the exported bundles, not memory measurements.
 
-`npm run bundle:worklet` packs `worklet/index.js` with `bare-pack --linked` into `worklet/packed.js`. The screen starts that string in a `Worklet`. `keet-lite-core` is a git dependency, not a published npm release.
+`npm run bundle:worklet` packs `worklet/index.js` with `bare-pack --linked` into `worklet/packed.js`. The screen starts that string in a `Worklet`. `keet-lite-core` is a git dependency, not a published npm release. The saga event channel is [`bare-rpc-event-channel`](https://github.com/AsynKarma/bare-rpc-event-channel) at git tag `v1.0.0`. That package is not on npm yet.
 
 Two installs on the same topic name exchange records. The topic field defaults to `lobby`. Use a different Corestore directory per install; the app passes the Expo document directory when that API is available, and the worklet otherwise uses its temp directory.
 
 ## Tests
 
-`npm test` runs Jest for the reducers, the sagas (`race`, `takeLatest`, `takeEvery`, `fork` / `cancel`, and the batched `eventChannel`), and a `bare-rpc` loopback of join, send, history, and a pushed message. The event channel adapter stays in this repo.
+`npm test` runs Jest for the reducers, the sagas (`race`, `takeLatest`, `takeEvery`, `fork` / `cancel`, and the batched `eventChannel`), and a `bare-rpc` loopback of join, send, history, and a pushed message. The event channel adapter is `bare-rpc-event-channel`.
 
 ## Limits
 
