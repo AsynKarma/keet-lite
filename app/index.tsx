@@ -7,8 +7,8 @@ import { actions } from '../src/chat/slice.js'
 import { createChatStore, selectMessages } from '../src/chat/store.js'
 import { createClient } from '../src/client.js'
 import { storagePath } from '../src/storage.js'
+import worker from 'expo-bare-kit/workers/worklet/index'
 
-const packed = require('../worklet/packed.js')
 const LINGER_MS = 5000
 
 type Message = {
@@ -29,29 +29,43 @@ export default function ChatScreen() {
   const [store, setStore] = useState<ReturnType<typeof createChatStore>['store'] | null>(null)
 
   useEffect(() => {
-    const source = bundleSource(packed)
-    const worklet = new Worklet()
-    worklet.start('/app.bundle', source)
-
-    const client = createClient(worklet.IPC)
-    const created = createChatStore(client, { batchMs: 50 })
-    const unsubscribe = created.store.subscribe(() => {
-      setSnapshot(created.store.getState())
-    })
-    setStore(created.store)
-    setSnapshot(created.store.getState())
-    created.store.dispatch(actions.join({ topic: 'lobby', storage: storagePath() }))
+    let stopped = false
+    let created: ReturnType<typeof createChatStore> | null = null
+    let unsubscribe = () => {}
+    let ipc: { terminate?: () => unknown } | null = null
 
     const appState = AppState.addEventListener('change', (next) => {
-      if (next === 'background') worklet.suspend(LINGER_MS)
-      else if (next === 'active') worklet.resume()
+      if (next === 'background') Worklet.suspend(LINGER_MS)
+      else if (next === 'active') Worklet.resume()
+    })
+
+    worker.start().then((started: { ipc: Parameters<typeof createClient>[0] & { terminate?: () => unknown } }) => {
+      if (stopped) {
+        if (started.ipc.terminate) started.ipc.terminate()
+        return
+      }
+      ipc = started.ipc
+      const client = createClient(started.ipc)
+      created = createChatStore(client, { batchMs: 50 })
+      unsubscribe = created.store.subscribe(() => {
+        setSnapshot(created!.store.getState())
+      })
+      setStore(created.store)
+      setSnapshot(created.store.getState())
+      created.store.dispatch(actions.join({ topic: 'lobby', storage: storagePath(), timeout: 60000 }))
+    }).catch((err: Error) => {
+      if (stopped) return
+      setSnapshot({
+        chat: { ...emptyChat(), status: 'error', error: err.message }
+      })
     })
 
     return () => {
-      created.store.dispatch(actions.stop())
+      stopped = true
+      if (created) created.store.dispatch(actions.stop())
       unsubscribe()
       appState.remove()
-      worklet.terminate()
+      if (ipc && ipc.terminate) ipc.terminate()
     }
   }, [])
 
@@ -62,7 +76,7 @@ export default function ChatScreen() {
   function onJoin() {
     const next = topic.trim()
     if (!store || next.length === 0) return
-    store.dispatch(actions.join({ topic: next, storage: storagePath() }))
+    store.dispatch(actions.join({ topic: next, storage: storagePath(), timeout: 60000 }))
   }
 
   function onSend() {
@@ -155,15 +169,6 @@ function Bubble({ item, mine }: { item: Message; mine: boolean }) {
       </Text>
     </View>
   )
-}
-
-function bundleSource(packed: unknown) {
-  if (typeof packed === 'string') return packed
-  if (packed && typeof packed === 'object' && 'default' in packed) {
-    const value = (packed as { default: unknown }).default
-    if (typeof value === 'string') return value
-  }
-  return String(packed)
 }
 
 function emptyChat() {

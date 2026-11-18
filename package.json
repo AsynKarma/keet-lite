@@ -7,7 +7,6 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "postinstall": "node scripts/link.js",
     "bundle:worklet": "node scripts/pack.js",
     "lint": "standard src worklet scripts plugins",
     "test": "jest"
@@ -41,8 +40,10 @@
     "bare-path": "^3.0.0",
     "bare-rpc": "^2.0.0",
     "bare-rpc-event-channel": "github:AsynKarma/bare-rpc-event-channel#v1.0.0",
+    "bare-stow-runtime": "^0.1.2",
     "compact-encoding": "^3.4.0",
     "expo": "~55.0.23",
+    "expo-bare-kit": "^0.3.0",
     "expo-build-properties": "~55.0.9",
     "expo-constants": "~55.0.7",
     "expo-file-system": "~55.0.0",
@@ -54,7 +55,7 @@
     "react-dom": "19.2.0",
     "react-native": "0.83.6",
     "react-native-b4a": "^0.0.4",
-    "react-native-bare-kit": "0.15.0",
+    "react-native-bare-kit": "^0.17.1",
     "react-native-safe-area-context": "~5.6.0",
     "react-native-screens": "~4.23.0",
     "redux-saga": "^1.3.0"

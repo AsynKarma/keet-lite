@@ -1,9 +1,10 @@
-/* global Bare, BareKit */
+/* global Bare */
 
 const os = require('os')
 const path = require('path')
 const RPC = require('bare-rpc')
 const c = require('compact-encoding')
+const KeetLite = require('keet-lite-core')
 const CMD = require('../src/commands.js')
 
 function serve (ipc, opts = {}) {
@@ -55,7 +56,7 @@ function serve (ipc, opts = {}) {
 function openChat (opts, storage, getSession) {
   const chat = opts.create
     ? opts.create(storage)
-    : new (require('keet-lite-core'))(storage || path.join(os.tmpdir(), 'keet-lite'))
+    : new KeetLite(storage || path.join(os.tmpdir(), 'keet-lite'))
 
   chat.onMessage((message) => {
     getSession().event(CMD.message).send(JSON.stringify(toJson(message)))
@@ -88,8 +89,15 @@ function hex (value) {
 
 function noop () {}
 
-if (typeof BareKit !== 'undefined' && BareKit.IPC) {
-  serve(BareKit.IPC)
+// bare-stow calls start(ipc, ready). Tests call start(stream, opts).
+function start (ipc, readyOrOpts) {
+  const opts = readyOrOpts && typeof readyOrOpts === 'object' ? readyOrOpts : undefined
+  const ready = typeof readyOrOpts === 'function' ? readyOrOpts : null
+  const session = serve(ipc, opts)
+  if (ready) ready()
+  return function stop () {
+    if (session && session.destroy) session.destroy()
+  }
 }
 
-module.exports = serve
+module.exports = start

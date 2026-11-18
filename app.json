@@ -39,6 +39,24 @@
           }
         }
       ],
+      [
+        "expo-bare-kit",
+        {
+          "workers": [
+            [
+              "worklet/index.js",
+              {
+                "imports": {
+                  "os": "bare-os",
+                  "path": "bare-path",
+                  "events": "bare-events",
+                  "process": "bare-process"
+                }
+              }
+            ]
+          ]
+        }
+      ],
       "./plugins/with-keet-lite.js"
     ]
   }
