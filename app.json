@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "Keet Lite",
+    "slug": "keet-lite",
+    "version": "1.0.0",
+    "newArchEnabled": true,
+    "orientation": "portrait",
+    "scheme": "keet-lite",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#111111"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.asynkarma.keetlite"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#111111"
+      },
+      "package": "com.asynkarma.keetlite"
+    },
+    "plugins": [
+      ["expo-router"],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "newArchEnabled": true
+          },
+          "android": {
+            "newArchEnabled": true,
+            "minSdkVersion": 31,
+            "useLegacyPackaging": true
+          }
+        }
+      ],
+      "./plugins/with-keet-lite.js"
+    ]
+  }
+}
