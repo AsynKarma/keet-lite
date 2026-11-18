@@ -60,7 +60,7 @@ npm run android
 
 `react-native-bare-kit` 0.17 does not ship Bare. `expo-bare-kit` links a current Bare Kit and the worklet's native addons during `expo prebuild`, and Metro packs `worklet/index.js` with `bare-stow`. Kit 0.15's Bare did not export symbols the current addons need (`js_get_object_type`, `bare_context_get`), so a worklet on that kit could not load `libbare-type`. `expo-build-properties` turns on the New Architecture. Hermes is the engine this SDK uses.
 
-`npm run bundle:worklet` still packs the worklet with `bare-pack` so the module graph can be checked without Metro. The screen does not start that file. `keet-lite-core` is a git dependency, not a published npm release. The saga event channel is [`bare-rpc-event-channel`](https://github.com/AsynKarma/bare-rpc-event-channel) at git tag `v1.0.0`. That package is not on npm yet.
+`npm run bundle:worklet` still packs the worklet with `bare-pack` so the module graph can be checked without Metro. The screen does not start that file. `keet-lite-core` is a git dependency, not a published npm release. The saga event channel is [`bare-rpc-event-channel`](https://www.npmjs.com/package/bare-rpc-event-channel) 1.0.0.
 
 Two installs on the same topic name exchange records. The topic field defaults to `lobby`. Use a different Corestore directory per install; the app passes the Expo document directory when that API is available, and the worklet otherwise uses its temp directory.
 
